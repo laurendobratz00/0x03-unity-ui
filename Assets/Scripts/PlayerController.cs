@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -9,6 +10,11 @@ public class PlayerController : MonoBehaviour
     public Rigidbody r;
     private int score = 0;
     public int health = 5;
+    public Text scoreText;
+    public Text healthText;
+    public Text WinLoseText;
+    public GameObject youWinUI;
+    public Image WinLoseBG;
     // Update is called once per frame
     void FixedUpdate()
     {
@@ -34,25 +40,50 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.tag == "Pickup")
         {
             score++;
-            Debug.Log("Score: " + score);
+            SetScoreText();
             Destroy(other.gameObject);
         }
         if (other.gameObject.tag == "Trap")
         {
             health--;
-            Debug.Log("Health: " + health);
+            SetHealthText();
         }
         if (other.gameObject.tag == "Goal")
         {
-            Debug.Log("You win!");
+            youWinUI.SetActive(true);
+            WinLoseText.text = "You Win!";
+            WinLoseText.color = Color.black;
+            WinLoseBG.color = Color.green;
+            StartCoroutine(LoadScene(3));
         }
     }
     void Update()
     {
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            SceneManager.LoadScene("menu");
+        }
         if (health == 0)
         {
-            Debug.Log("Game Over!");
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            youWinUI.SetActive(true);
+            WinLoseText.text = "Game Over!";
+            WinLoseBG.color = Color.red;
+            WinLoseText.color = Color.white;
+            StartCoroutine(LoadScene(3));
+            // SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
+    }
+    void SetScoreText()
+    {
+        scoreText.text = "Score: " + score;
+    }
+    void SetHealthText()
+    {
+        healthText.text = "Health: " + health;
+    }
+    IEnumerator LoadScene(float seconds)
+    {
+        yield return new WaitForSeconds(3f);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
